@@ -27,7 +27,7 @@ unique_locations <- unique(submission_file_point$location )
 for (location in unique_locations){
   plotdf <- ggplot(submission_file_point[submission_file_point$location == location,],aes(x=target_end_date,y=value)) + geom_point() + 
     geom_point(data=y_states_date_subset[y_states_date_subset$location ==location,],aes(x=date,y=value))+
-    geom_text(data=y_states_date_max_diffs[y_states_date_max_diffs$location == location,],aes(x=tail(y_states_date_subset$date,1)[1],y=mean(y_states_date_subset$value)/2,label=paste0("Largest Weekly Diff ",diff)))+
+    geom_text(data=y_states_date_max_diffs[y_states_date_max_diffs$location == location,],aes(x=tail(y_states_date_subset$date,1)[1],y=mean(y_states_date_subset$value)/2,label=paste0(diff)))+
     facet_wrap(~location,scales="free") + 
     geom_vline(xintercept=tail(y_states_date_subset$date,1))+theme(axis.text.x=element_blank()) + theme_bw()
    ggsave(filename = location,plot = plotdf,device = "png")
