@@ -14,7 +14,7 @@ transform <- function(value,type){
   }
 }
 ## submission_file reading
-submission_file <- read.csv("dan_submission_file.csv")
+submission_file <- read.csv("2020-08-16-UMass-MechBayes.csv")
 
 for (type in c("cum","inc")){
     submission_file_point <- submission_file[submission_file$type == "point" & submission_file$target %in% paste0(1:4, " wk ahead ",type," death"),]
@@ -38,7 +38,7 @@ for (type in c("cum","inc")){
     x <- getURL("https://raw.githubusercontent.com/reichlab/covid19-forecast-hub/master/data-truth/truth-Cumulative%20Deaths.csv")
     y <- read.csv(text = x)
     y_states <- y[!grepl("County",y$location_name) , ]
-    y_states_date_subset <- y_states[y_states$date <= "2020-08-09" &y_states$date >= "2020-03-15" ,]
+    y_states_date_subset <- y_states[y_states$date <= "2020-08-15" &y_states$date >= "2020-03-15" ,]
     ## merge observed data and submission file
     library(lubridate)
     y_states_date_max_diffs_week <- y_states_date_subset %>% group_by(location,week = week(date))
@@ -48,12 +48,13 @@ for (type in c("cum","inc")){
     
     # convert to date
     y_states_date_subset$date <- as.Date(y_states_date_subset$date)
-    y_states_date_subset$week <- week(y_states_date_subset$date)
+    y_states_date_subset$week <- as.week(y_states_date_subset$date)$week
     submission_file_point$target_end_date <- as.Date(submission_file_point$target_end_date)
-    y_states_date_subset_weekly <- y_states_date_subset %>% group_by(location,date = week(date)) %>% summarize(value=tail(value,2)[1])
+    y_states_date_subset_weekly <- y_states_date_subset %>% group_by(location,date = as.week(date)$week) %>% summarize(value=tail(value,1)[1])
     ## plot cumulative 
+    y_states_date_subset_weekly$date <- as.numeric(y_states_date_subset_weekly$date)
    
-    y_states_date_subset_weekly$date<- date_in_week(year = 2020, week = y_states_date_subset_weekly$date +1 , weekday = 1) -2
+    y_states_date_subset_weekly$date<- date_in_week(year = 2020, week = y_states_date_subset_weekly$date +2 , weekday = 1) -2
     
     
     unique_locations <- unique(submission_file_point$location )
