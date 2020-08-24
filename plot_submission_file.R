@@ -1,6 +1,8 @@
 library(ggplot2)
 library(RCurl)
 library(dplyr)
+library(epitools)
+library(ISOweek)
 ## utility functions
 date_in_week <- function(year, week, weekday){
   w <- paste0(year, "-W", sprintf("%02d", week), "-", weekday)
@@ -14,7 +16,7 @@ transform <- function(value,type){
   }
 }
 ## submission_file reading
-submission_file <- read.csv("2020-08-16-UMass-MechBayes.csv")
+submission_file <- read.csv("total/2020-08-23-UMass-MechBayes.csv")
 
 for (type in c("cum","inc")){
     submission_file_point <- submission_file[submission_file$type == "point" & submission_file$target %in% paste0(1:4, " wk ahead ",type," death"),]
@@ -38,7 +40,7 @@ for (type in c("cum","inc")){
     x <- getURL("https://raw.githubusercontent.com/reichlab/covid19-forecast-hub/master/data-truth/truth-Cumulative%20Deaths.csv")
     y <- read.csv(text = x)
     y_states <- y[!grepl("County",y$location_name) , ]
-    y_states_date_subset <- y_states[y_states$date <= "2020-08-15" &y_states$date >= "2020-03-15" ,]
+    y_states_date_subset <- y_states[y_states$date <= "2020-08-22" &y_states$date >= "2020-03-15" ,]
     ## merge observed data and submission file
     library(lubridate)
     y_states_date_max_diffs_week <- y_states_date_subset %>% group_by(location,week = week(date))
